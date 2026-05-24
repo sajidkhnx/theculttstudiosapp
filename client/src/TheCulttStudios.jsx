@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import './theculttstudios.css';
 // external full-page HTML will open in a new tab from `client/public`
 
@@ -77,7 +77,7 @@ export default function TheCulttStudios() {
       <div className="cursor-ring" id="cursor-ring"></div>
 
       <nav>
-        <a href="#" className="nav-logo">
+        <a href="/" className="nav-logo">
           <img src="https://scontent.cdninstagram.com/v/t51.82787-19/695843590_17925167370338107_6530331016353766863_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=111&ccb=7-5&_nc_sid=f7ccc5&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy40ODEuQzMifQ%3D%3D&_nc_ohc=nfuNDdygN_MQ7kNvwEAkJDg&_nc_oc=AdpHrMadBSj5DNNTOB-GZGjxWvgGpnDRNH76VsxZpRQplOiuaFHnphdtcYWmrdETG7Ujw1nU5erZLVwUEu4UR0WQ&_nc_zt=24&_nc_ht=scontent.cdninstagram.com&_nc_gid=06kz6D4EZdtNDEUfKyTarA&_nc_ss=7b6a8&oh=00_Af4SPSYIYkjXe4FkVJX3ekcbiVR79HfJn2ZhfzTZvmWSUw&oe=6A12FBA8"
             alt="The Cultt Studio"
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
