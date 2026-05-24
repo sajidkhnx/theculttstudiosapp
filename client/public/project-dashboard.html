@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio OS — The Cultt Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Clash+Display:wght@400;500;600;700&family=Archivo:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+	--bg:#050508;
+	--panel:#0b0b12;
+	--panel2:#0f0f18;
+	--glass:rgba(255,255,255,0.03);
+	--glass2:rgba(255,255,255,0.06);
+	--border:rgba(255,255,255,0.07);
+	--border2:rgba(255,255,255,0.12);
+	--cyan:#00f5d4;
+	--cyan2:rgba(0,245,212,0.12);
+	--cyan3:rgba(0,245,212,0.06);
+	--violet:#7c3aed;
+	--violet2:rgba(124,58,237,0.15);
+	--pink:#f72585;
+	--pink2:rgba(247,37,133,0.12);
+	--amber:#ffb703;
+	--amber2:rgba(255,183,3,0.12);
+	--green:#06d6a0;
+	--white:#f0f0ff;
+	--muted:#6b6b80;
+	--muted2:#3a3a4a;
+	--mono:'Space Mono',monospace;
+	--display:'Clash Display','Archivo',sans-serif;
+	--body:'Archivo',sans-serif;
+}
+
+html{height:100%;}
+body{
+	background:var(--bg);
+	color:var(--white);
+	font-family:var(--body);
+	min-height:100vh;
+	overflow-x:hidden;
+	cursor:none;
+}
+
+/* bg grid */
+body::before{
+	content:'';
+	position:fixed;inset:0;
+	background-image:
+		linear-gradient(rgba(0,245,212,0.03) 1px,transparent 1px),
+		linear-gradient(90deg,rgba(0,245,212,0.03) 1px,transparent 1px);
+	background-size:40px 40px;
+	pointer-events:none;z-index:0;
+}
+body::after{
+	content:'';
+	position:fixed;
+	width:600px;height:600px;
+	background:radial-gradient(circle,rgba(124,58,237,0.08) 0%,transparent 70%);
+	top:-100px;right:-100px;
+	pointer-events:none;z-index:0;
+}
+
+/* ─── CURSOR ─── */
+#cur{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
+#cur-trail{position:fixed;width:30px;height:30px;border:1px solid rgba(0,245,212,.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .1s ease,top .1s ease,width .3s,height .3s;}
+.cursor-big #cur{width:5px;height:5px;}
+.cursor-big #cur-trail{width:48px;height:48px;border-color:rgba(0,245,212,.7);}
+
+/* ─── LAYOUT ─── */
+.os-wrap{display:grid;grid-template-columns:220px 1fr;grid-template-rows:56px 1fr;min-height:100vh;position:relative;z-index:1;}
+
+/* ─── TOPBAR ─── */
+.topbar{
+	grid-column:1/-1;
+	background:rgba(5,5,8,.9);
+	border-bottom:1px solid var(--border);
+	backdrop-filter:blur(20px);
+	display:flex;align-items:center;
+	padding:0 1.5rem;
+	gap:1.5rem;
+	position:sticky;top:0;z-index:50;
+}
+.tb-logo{font-family:var(--display);font-size:.85rem;font-weight:700;letter-spacing:.05em;color:var(--cyan);display:flex;align-items:center;gap:.6rem;white-space:nowrap;}
+.tb-logo-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.tb-path{font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.05em;margin-left:.5rem;}
+.tb-path span{color:var(--cyan);}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:1.2rem;}
+.tb-status{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;color:var(--green);display:flex;align-items:center;gap:.4rem;}
+.tb-status::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);}
+.tb-time{font-family:var(--mono);font-size:.6rem;color:var(--muted);}
+.tb-avatar{width:28px;height:28px;border-radius:50%;border:1px solid var(--cyan2);background:var(--violet2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.6rem;color:var(--cyan);}
+
+/* ─── SIDEBAR ─── */
+.sidebar{
+	background:var(--panel);
+	border-right:1px solid var(--border);
+	padding:1.5rem 0;
+	display:flex;flex-direction:column;
+	gap:.25rem;
+	position:sticky;top:56px;height:calc(100vh - 56px);
+	overflow-y:auto;
+}
+.sidebar::-webkit-scrollbar{width:0;}
+.sb-section{padding:.5rem 1.2rem .25rem;font-family:var(--mono);font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted2);margin-top:.5rem;}
+.sb-item{display:flex;align-items:center;gap:.7rem;padding:.6rem 1.2rem;font-size:.72rem;color:var(--muted);text-decoration:none;transition:all .2s;position:relative;cursor:none;}
+.sb-item:hover{color:var(--white);background:var(--glass2);}
+.sb-item.active{color:var(--cyan);background:var(--cyan3);}
+.sb-item.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:2px;background:var(--cyan);box-shadow:0 0 8px var(--cyan);}
+.sb-icon{width:16px;height:16px;opacity:.7;flex-shrink:0;}
+.sb-item.active .sb-icon{opacity:1;}
+.sb-badge{margin-left:auto;font-family:var(--mono);font-size:.5rem;background:var(--violet2);color:var(--cyan);padding:.15rem .45rem;border-radius:3px;border:1px solid rgba(0,245,212,.2);}
+.sb-footer{margin-top:auto;padding:1rem 1.2rem;border-top:1px solid var(--border);}
+.sb-user{display:flex;align-items:center;gap:.7rem;}
+.sb-user-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--pink));display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.6rem;color:#fff;flex-shrink:0;}
+.sb-user-name{font-size:.7rem;font-weight:500;color:var(--white);}
+.sb-user-role{font-family:var(--mono);font-size:.55rem;color:var(--muted);}
+
+/* ─── MAIN ─── */
+.main{padding:2rem;overflow-y:auto;display:flex;flex-direction:column;gap:1.8rem;background:var(--bg);}
+
+/* ─── HEADER ROW ─── */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
+.page-title{font-family:var(--display);font-size:1.6rem;font-weight:700;color:var(--white);line-height:1.1;}
+.page-title span{color:var(--cyan);}
+.page-sub{font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:.4rem;letter-spacing:.05em;}
+.header-actions{display:flex;gap:.7rem;align-items:center;flex-shrink:0;}
+.btn-new{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;background:var(--cyan);color:var(--bg);padding:.45rem 1rem;border:none;cursor:none;transition:all .2s;display:flex;align-items:center;gap:.4rem;}
+.btn-new:hover{background:#00ddbf;}
+.btn-filter{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;background:transparent;color:var(--muted);border:1px solid var(--border2);padding:.45rem .9rem;cursor:none;transition:all .2s;}
+.btn-filter:hover{color:var(--white);border-color:rgba(255,255,255,.2);}
+
+/* ─── KPI STRIP ─── */
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+.kpi-card{
+	background:var(--panel);
+	border:1px solid var(--border);
+	padding:1.2rem 1.4rem;
+	position:relative;
+	overflow:hidden;
+	transition:border-color .3s,transform .3s;
+}
+.kpi-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.kpi-card.c-cyan::before{background:linear-gradient(90deg,transparent,var(--cyan),transparent);}
+.kpi-card.c-violet::before{background:linear-gradient(90deg,transparent,var(--violet),transparent);}
+.kpi-card.c-pink::before{background:linear-gradient(90deg,transparent,var(--pink),transparent);}
+.kpi-card.c-amber::before{background:linear-gradient(90deg,transparent,var(--amber),transparent);}
+.kpi-label{font-family:var(--mono);font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;}
+.kpi-val{font-family:var(--display);font-size:2rem;font-weight:700;line-height:1;color:var(--white);}
+.kpi-card.c-cyan .kpi-val{color:var(--cyan);} 
+.kpi-card.c-violet .kpi-val{color:#a78bfa;}
+.kpi-card.c-pink .kpi-val{color:var(--pink);} 
+.kpi-card.c-amber .kpi-val{color:var(--amber);} 
+.kpi-delta{font-family:var(--mono);font-size:.58rem;color:var(--green);margin-top:.4rem;display:flex;align-items:center;gap:.3rem;}
+.kpi-delta.neg{color:var(--pink);} 
+.kpi-bg-num{position:absolute;right:.5rem;bottom:-.3rem;font-family:var(--display);font-size:3.5rem;font-weight:700;opacity:.04;line-height:1;pointer-events:none;}
+
+/* ─── TWO COL ─── */
+.two-col{display:grid;grid-template-columns:1fr 320px;gap:1.5rem;}
+
+/* ─── PROJECTS TABLE ─── */
+.panel{background:var(--panel);border:1px solid var(--border);overflow:hidden;}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.4rem;border-bottom:1px solid var(--border);} 
+.panel-title{font-family:var(--display);font-size:.82rem;font-weight:600;color:var(--white);display:flex;align-items:center;gap:.6rem;}
+.panel-title .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.dot-cyan{background:var(--cyan);box-shadow:0 0 6px var(--cyan);} 
+.dot-violet{background:#a78bfa;box-shadow:0 0 6px #a78bfa;} 
+.dot-pink{background:var(--pink);box-shadow:0 0 6px var(--pink);} 
+.dot-amber{background:var(--amber);box-shadow:0 0 6px var(--amber);} 
+.dot-green{background:var(--green);box-shadow:0 0 6px var(--green);} 
+.panel-action{font-family:var(--mono);font-size:.55rem;color:var(--cyan);letter-spacing:.05em;cursor:none;background:none;border:none;}
+
+/* project rows */
+.proj-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 80px;align-items:center;padding:.85rem 1.4rem;border-bottom:1px solid var(--border);transition:background .2s;cursor:none;}
+.proj-row:last-child{border-bottom:none;}
+.proj-row:hover{background:var(--glass);} 
+.proj-row.header{padding:.5rem 1.4rem;background:var(--panel2);} 
+.proj-row.header .col{font-family:var(--mono);font-size:.52rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);} 
+.col{} 
+.proj-name-wrap{display:flex;align-items:center;gap:.8rem;} 
+.proj-icon{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;} 
+.pi-cyan{background:var(--cyan2);border:1px solid rgba(0,245,212,.2);} 
+.pi-violet{background:var(--violet2);border:1px solid rgba(124,58,237,.3);} 
+.pi-pink{background:var(--pink2);border:1px solid rgba(247,37,133,.2);} 
+.pi-amber{background:var(--amber2);border:1px solid rgba(255,183,3,.2);} 
+.pi-green{background:rgba(6,214,160,.12);border:1px solid rgba(6,214,160,.2);} 
+.proj-name{font-size:.75rem;font-weight:500;color:var(--white);} 
+.proj-type{font-family:var(--mono);font-size:.55rem;color:var(--muted);margin-top:.15rem;} 
+.tag{display:inline-flex;align-items:center;font-family:var(--mono);font-size:.52rem;letter-spacing:.05em;padding:.18rem .55rem;border-radius:3px;white-space:nowrap;} 
+.tag-cyan{background:var(--cyan2);color:var(--cyan);border:1px solid rgba(0,245,212,.2);} 
+.tag-violet{background:var(--violet2);color:#c4b5fd;border:1px solid rgba(124,58,237,.3);} 
+.tag-pink{background:var(--pink2);color:#f9a8d4;border:1px solid rgba(247,37,133,.2);} 
+.tag-amber{background:var(--amber2);color:var(--amber);border:1px solid rgba(255,183,3,.2);} 
+.tag-green{background:rgba(6,214,160,.1);color:var(--green);border:1px solid rgba(6,214,160,.2);} 
+.tag-gray{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--border);} 
+
+/* progress bar */
+.prog-wrap{display:flex;align-items:center;gap:.7rem;} 
+.prog-bar{flex:1;height:4px;background:var(--muted2);border-radius:2px;overflow:hidden;} 
+.prog-fill{height:100%;border-radius:2px;transition:width 1s ease;} 
+.prog-cyan{background:var(--cyan);} 
+.prog-violet{background:#a78bfa;} 
+.prog-pink{background:var(--pink);} 
+.prog-amber{background:var(--amber);} 
+.prog-green{background:var(--green);} 
+.prog-pct{font-family:var(--mono);font-size:.55rem;color:var(--muted);min-width:2.2rem;text-align:right;} 
+
+/* avatar stack */
+.av-stack{display:flex;} 
+.av{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--panel);margin-left:-6px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.45rem;font-weight:700;} 
+.av:first-child{margin-left:0;} 
+.av-c{background:var(--cyan2);color:var(--cyan);} 
+.av-v{background:var(--violet2);color:#a78bfa;} 
+.av-p{background:var(--pink2);color:var(--pink);} 
+.av-a{background:var(--amber2);color:var(--amber);} 
+
+/* ─── RIGHT COLUMN ─── */
+.right-col{display:flex;flex-direction:column;gap:1.5rem;} 
+
+/* activity feed */
+.activity-list{padding:.5rem 0;} 
+.activity-item{display:flex;gap:.9rem;padding:.7rem 1.4rem;transition:background .2s;} 
+.activity-item:hover{background:var(--glass);} 
+.act-line{display:flex;flex-direction:column;align-items:center;gap:0;} 
+.act-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;} 
+.act-connector{flex:1;width:1px;background:var(--border);margin-top:4px;} 
+.act-body{flex:1;min-width:0;} 
+.act-text{font-size:.68rem;line-height:1.5;color:var(--white);} 
+.act-text strong{font-weight:500;} 
+.act-time{font-family:var(--mono);font-size:.52rem;color:var(--muted);margin-top:.2rem;} 
+
+/* skills radar — simple bar chart */
+.skills-bars{padding:.8rem 1.4rem 1.2rem;display:flex;flex-direction:column;gap:.8rem;} 
+.skill-row{display:flex;flex-direction:column;gap:.3rem;} 
+.skill-meta{display:flex;justify-content:space-between;align-items:baseline;} 
+.skill-name{font-size:.65rem;color:var(--white);} 
+.skill-pct{font-family:var(--mono);font-size:.55rem;color:var(--muted);} 
+.skill-track{height:5px;background:var(--muted2);border-radius:3px;overflow:hidden;} 
+.skill-fill{height:100%;border-radius:3px;animation:fillBar .8s ease both;} 
+@keyframes fillBar{from{width:0;}} 
+
+/* ─── BOTTOM ROW ─── */
+.bottom-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;} 
+
+/* mini chart */
+.chart-area{padding:1rem 1.4rem 1.2rem;} 
+.chart-svg-wrap{width:100%;overflow:hidden;} 
+
+/* tech stack pills */
+.stack-grid{display:flex;flex-wrap:wrap;gap:.5rem;padding:1rem 1.4rem;} 
+.stack-pill{display:flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.58rem;padding:.3rem .75rem;border:1px solid var(--border);color:var(--muted);transition:all .25s;} 
+.stack-pill:hover{border-color:var(--cyan2);color:var(--cyan);background:var(--cyan3);} 
+.stack-pill .sp-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;} 
+
+/* timeline */
+.timeline{padding:.6rem 1.4rem 1rem;display:flex;flex-direction:column;gap:.15rem;} 
+.tl-item{display:flex;align-items:flex-start;gap:.8rem;padding:.5rem 0;border-bottom:1px solid var(--border);} 
+.tl-item:last-child{border-bottom:none;} 
+.tl-date{font-family:var(--mono);font-size:.52rem;color:var(--muted);min-width:3.5rem;} 
+.tl-bar{display:flex;flex-direction:column;align-items:center;gap:0;margin-top:3px;} 
+.tl-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;} 
+.tl-content{flex:1;min-width:0;} 
+.tl-title{font-size:.67rem;font-weight:500;color:var(--white);} 
+.tl-sub{font-family:var(--mono);font-size:.55rem;color:var(--muted);margin-top:.15rem;} 
+
+/* ─── ANIMATIONS ─── */
+@keyframes slideUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}} 
+@keyframes slideLeft{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}} 
+.anim-1{animation:slideUp .5s .1s ease both;} 
+.anim-2{animation:slideUp .5s .2s ease both;} 
+.anim-3{animation:slideUp .5s .3s ease both;} 
+.anim-4{animation:slideUp .5s .4s ease both;} 
+.anim-5{animation:slideUp .5s .5s ease both;} 
+.anim-6{animation:slideUp .5s .6s ease both;} 
+.anim-r{animation:slideLeft .5s .4s ease both;} 
+
+/* scan line effect on topbar */
+.topbar::after{
+	content:'';
+	position:absolute;
+	left:0;right:0;height:1px;
+	background:linear-gradient(90deg,transparent,rgba(0,245,212,.15),transparent);
+	bottom:-1px;
+	animation:scanH 4s linear infinite;
+}
+@keyframes scanH{
+	from{transform:translateX(-100%);}  
+	to{transform:translateX(100%);} 
+}
+
+/* glowing ring on kpi hover */
+.kpi-card.c-cyan:hover{border-color:rgba(0,245,212,.3);box-shadow:0 0 20px rgba(0,245,212,.05);} 
+.kpi-card.c-violet:hover{border-color:rgba(124,58,237,.3);box-shadow:0 0 20px rgba(124,58,237,.05);} 
+.kpi-card.c-pink:hover{border-color:rgba(247,37,133,.3);box-shadow:0 0 20px rgba(247,37,133,.05);} 
+.kpi-card.c-amber:hover{border-color:rgba(255,183,3,.3);box-shadow:0 0 20px rgba(255,183,3,.05);} 
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-trail"></div>
+
+<div class="os-wrap">
+
+	<!-- TOPBAR -->
+	<header class="topbar">
+		<div class="tb-logo">
+			<div class="tb-logo-dot"></div>
+			CULTT / OS
+		</div>
+		<div class="tb-path">
+			<span>~/</span>portfolio<span>/</span>projects
+		</div>
+		<div class="tb-right">
+			<div class="tb-status">ALL SYSTEMS OPERATIONAL</div>
+			<div class="tb-time" id="clock">--:--:--</div>
+			<div class="tb-avatar">AM</div>
+		</div>
+	</header>
+
+	<!-- SIDEBAR -->
+	<aside class="sidebar">
+		<div class="sb-section">Navigation</div>
+		<a class="sb-item active" href="#">
+			<svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+			Dashboard
+		</a>
+		<a class="sb-item" href="#">
+			<svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
+			All Projects
+			<span class="sb-badge">12</span>
+		</a>
+		<a class="sb-item" href="#">
+			<svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+			In Progress
+			<span class="sb-badge">5</span>
+		</a>
+		<a class="sb-item" href="#">
+			<svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4"/><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+			Completed
+		</a>
+
+		<div class="sb-section">Categories</div>
+		<a class="sb-item" href="#">
+			<svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9h16"/><path d="M9 4v5"/></svg>
+			Apps
+		</a>
+		<a class="sb-item" href="#">
+			<svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20v-1a8 8 0 0116 0v1"/></svg>
+			UI / UX
+		</a>
+		<a class="sb-item" href="#">
+			<svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 10l-4 4-4-4m8 4l-4 4-4-4"/></svg>
+			Edits
+		</a>
+		<a class="sb-item" href="#">
+			<svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3l18 18M10.5 10.677a2 2 0 002.823 2.823"/><path d="M7.362 7.56C5.88 8.885 5 10.835 5 13c0 4 3 7 7 7a9 9 0 006.938-3.362"/><path d="M17.625 13.217A7 7 0 0012 6c-1.296 0-2.5.36-3.5.98"/></svg>
+			Branding
+		</a>
+
+		<div class="sb-section">Tools</div>
+		<a class="sb-item" href="#">
+			<svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+			Notes
+		</a>
+		<a class="sb-item" href="#">
+			<svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+			Settings
+		</a>
+
+		<div class="sb-footer">
+			<div class="sb-user">
+				<div class="sb-user-av">AM</div>
+				<div>
+					<div class="sb-user-name">Aryan Malik</div>
+					<div class="sb-user-role">@theculttstudios</div>
+				</div>
+			</div>
+		</div>
+	</aside>
+
+	<!-- MAIN CONTENT -->
+	<main class="main">
+
+		<!-- PAGE HEADER -->
+		<div class="page-header anim-1">
+			<div>
+				<div class="page-title">Project <span>Overview</span></div>
+				<div class="page-sub">// 12 active projects · last synced just now · v2.4.1</div>
+			</div>
+			<div class="header-actions">
+				<button class="btn-filter">⌘ Filter</button>
+				<button class="btn-filter">↓ Export</button>
+				<button class="btn-new">+ New Project</button>
+			</div>
+		</div>
+
+		<!-- KPI STRIP -->
+		<div class="kpi-strip anim-2">
+			<div class="kpi-card c-cyan">
+				<div class="kpi-label">Total Projects</div>
+				<div class="kpi-val">12</div>
+				<div class="kpi-delta">↑ +3 this month</div>
+				<div class="kpi-bg-num">12</div>
+			</div>
+			<div class="kpi-card c-violet">
+				<div class="kpi-label">In Progress</div>
+				<div class="kpi-val">5</div>
+				<div class="kpi-delta">↑ Active sprints</div>
+				<div class="kpi-bg-num">5</div>
+			</div>
+			<div class="kpi-card c-pink">
+				<div class="kpi-label">Completed</div>
+				<div class="kpi-val">7</div>
+				<div class="kpi-delta">↑ 58% success rate</div>
+				<div class="kpi-bg-num">7</div>
+			</div>
+			<div class="kpi-card c-amber">
+				<div class="kpi-label">Client Rating</div>
+				<div class="kpi-val">4.9</div>
+				<div class="kpi-delta">↑ ★ Avg. score</div>
+				<div class="kpi-bg-num">★</div>
+			</div>
+		</div>
+
+		<!-- PROJECTS TABLE + RIGHT COL -->
+		<div class="two-col">
+
+			<!-- PROJECTS TABLE -->
+			<div class="panel anim-3">
+				<div class="panel-head">
+					<div class="panel-title"><span class="dot dot-cyan"></span> Active Projects</div>
+					<button class="panel-action">View all →</button>
+				</div>
+				<div class="proj-row header">
+					<div class="col">Project</div>
+					<div class="col">Category</div>
+					<div class="col">Progress</div>
+					<div class="col">Team</div>
+					<div class="col">Status</div>
+				</div>
+
+				<div class="proj-row">
+					<div class="col">
+						<div class="proj-name-wrap">
+							<div class="proj-icon pi-cyan">⚡</div>
+							<div>
+								<div class="proj-name">NeoBank App</div>
+								<div class="proj-type">React Native · FinTech</div>
+							</div>
+						</div>
+					</div>
+					<div class="col"><span class="tag tag-cyan">App Dev</span></div>
+					<div class="col">
+						<div class="prog-wrap">
+							<div class="prog-bar"><div class="prog-fill prog-cyan" style="width:78%"></div></div>
+							<span class="prog-pct">78%</span>
+						</div>
+					</div>
+					<div class="col">
+						<div class="av-stack">
+							<div class="av av-c">AM</div><div class="av av-v">RK</div><div class="av av-p">+2</div>
+						</div>
+					</div>
+					<div class="col"><span class="tag tag-cyan">Active</span></div>
+				</div>
+
+				<div class="proj-row">
+					<div class="col">
+						<div class="proj-name-wrap">
+							<div class="proj-icon pi-violet">🎞</div>
+							<div>
+								<div class="proj-name">Brand Reel Series</div>
+								<div class="proj-type">Premiere · Motion</div>
+							</div>
+						</div>
+					</div>
+					<div class="col"><span class="tag tag-violet">Video Edit</span></div>
+					<div class="col">
+						<div class="prog-wrap">
+							<div class="prog-bar"><div class="prog-fill prog-violet" style="width:92%"></div></div>
+							<span class="prog-pct">92%</span>
+						</div>
+					</div>
+					<div class="col">
+						<div class="av-stack">
+							<div class="av av-v">PS</div><div class="av av-c">AM</div>
+						</div>
+					</div>
+					<div class="col"><span class="tag tag-amber">Review</span></div>
+				</div>
+
+				<div class="proj-row">
+					<div class="col">
+						<div class="proj-name-wrap">
+							<div class="proj-icon pi-pink">🎨</div>
+							<div>
+								<div class="proj-name">Dashboard UI Kit</div>
+								<div class="proj-type">Figma · Design System</div>
+							</div>
+						</div>
+					</div>
+					<div class="col"><span class="tag tag-pink">UI / UX</span></div>
+					<div class="col">
+						<div class="prog-wrap">
+							<div class="prog-bar"><div class="prog-fill prog-pink" style="width:45%"></div></div>
+							<span class="prog-pct">45%</span>
+						</div>
+					</div>
+					<div class="col">
+						<div class="av-stack">
+							<div class="av av-p">AJ</div><div class="av av-a">+3</div>
+						</div>
+					</div>
+					<div class="col"><span class="tag tag-cyan">Active</span></div>
+				</div>
+
+				<div class="proj-row">
+					<div class="col">
+						<div class="proj-name-wrap">
+							<div class="proj-icon pi-amber">🛒</div>
+							<div>
+								<div class="proj-name">E-Commerce Platform</div>
+								<div class="proj-type">Next.js · Shopify</div>
+							</div>
+						</div>
+					</div>
+					<div class="col"><span class="tag tag-amber">App Dev</span></div>
+					<div class="col">
+						<div class="prog-wrap">
+							<div class="prog-bar"><div class="prog-fill prog-amber" style="width:60%"></div></div>
+							<span class="prog-pct">60%</span>
+						</div>
+					</div>
+					<div class="col">
+						<div class="av-stack">
+							<div class="av av-a">NK</div><div class="av av-c">AM</div><div class="av av-v">RS</div>
+						</div>
+					</div>
+					<div class="col"><span class="tag tag-cyan">Active</span></div>
+				</div>
+
+				<div class="proj-row">
+					<div class="col">
+						<div class="proj-name-wrap">
+							<div class="proj-icon pi-green">📱</div>
+							<div>
+								<div class="proj-name">Fitness Tracker App</div>
+								<div class="proj-type">Flutter · Health</div>
+							</div>
+						</div>
+					</div>
+					<div class="col"><span class="tag tag-green">App Dev</span></div>
+					<div class="col">
+						<div class="prog-wrap">
+							<div class="prog-bar"><div class="prog-fill prog-green" style="width:100%"></div></div>
+							<span class="prog-pct">100%</span>
+						</div>
+					</div>
+					<div class="col">
+						<div class="av-stack">
+							<div class="av av-c">AM</div><div class="av av-p">+2</div>
+						</div>
+					</div>
+					<div class="col"><span class="tag tag-green">Done</span></div>
+				</div>
+
+				<div class="proj-row">
+					<div class="col">
+						<div class="proj-name-wrap">
+							<div class="proj-icon pi-cyan">🤖</div>
+							<div>
+								<div class="proj-name">AI Chatbot SaaS</div>
+								<div class="proj-type">Python · OpenAI API</div>
+							</div>
+						</div>
+					</div>
+					<div class="col"><span class="tag tag-violet">SaaS</span></div>
+					<div class="col">
+						<div class="prog-wrap">
+							<div class="prog-bar"><div class="prog-fill prog-cyan" style="width:30%"></div></div>
+							<span class="prog-pct">30%</span>
+						</div>
+					</div>
+					<div class="col">
+						<div class="av-stack">
+							<div class="av av-v">AM</div><div class="av av-c">DK</div>
+						</div>
+					</div>
+					<div class="col"><span class="tag tag-gray">Planned</span></div>
+				</div>
+
+			</div>
+
+			<!-- RIGHT COLUMN -->
+			<div class="right-col anim-r">
+
+				<!-- ACTIVITY FEED -->
+				<div class="panel">
+					<div class="panel-head">
+						<div class="panel-title"><span class="dot dot-violet"></span> Recent Activity</div>
+					</div>
+					<div class="activity-list">
+						<div class="activity-item">
+							<div class="act-line"><div class="act-dot" style="background:var(--cyan)"></div><div class="act-connector"></div></div>
+							<div class="act-body">
+								<div class="act-text"><strong>NeoBank</strong> — pushed build v0.7.2 to staging</div>
+								<div class="act-time">2 min ago</div>
+							</div>
+						</div>
+						<div class="activity-item">
+							<div class="act-line"><div class="act-dot" style="background:#a78bfa"></div><div class="act-connector"></div></div>
+							<div class="act-body">
+								<div class="act-text"><strong>Brand Reel</strong> — client approved cut #3</div>
+								<div class="act-time">1 hr ago</div>
+							</div>
+						</div>
+						<div class="activity-item">
+							<div class="act-line"><div class="act-dot" style="background:var(--green)"></div><div class="act-connector"></div></div>
+							<div class="act-body">
+								<div class="act-text"><strong>Fitness App</strong> — marked complete ✓</div>
+								<div class="act-time">3 hr ago</div>
+							</div>
+						</div>
+						<div class="activity-item">
+							<div class="act-line"><div class="act-dot" style="background:var(--pink)"></div><div class="act-connector"></div></div>
+							<div class="act-body">
+								<div class="act-text"><strong>UI Kit</strong> — 12 new components added</div>
+								<div class="act-time">5 hr ago</div>
+							</div>
+						</div>
+						<div class="activity-item">
+							<div class="act-line"><div class="act-dot" style="background:var(--amber)"></div></div>
+							<div class="act-body">
+								<div class="act-text"><strong>E-Commerce</strong> — payment flow reviewed</div>
+								<div class="act-time">Yesterday</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- SKILLS -->
+				<div class="panel">
+					<div class="panel-head">
+						<div class="panel-title"><span class="dot dot-pink"></span> Skill Stack</div>
+					</div>
+					<div class="skills-bars">
+						<div class="skill-row">
+							<div class="skill-meta"><span class="skill-name">React / Next.js</span><span class="skill-pct">95%</span></div>
+							<div class="skill-track"><div class="skill-fill" style="width:95%;background:var(--cyan);animation-delay:.1s"></div></div>
+						</div>
+						<div class="skill-row">
+							<div class="skill-meta"><span class="skill-name">Video Editing</span><span class="skill-pct">90%</span></div>
+							<div class="skill-track"><div class="skill-fill" style="width:90%;background:#a78bfa;animation-delay:.2s"></div></div>
+						</div>
+						<div class="skill-row">
+							<div class="skill-meta"><span class="skill-name">UI / UX Design</span><span class="skill-pct">88%</span></div>
+							<div class="skill-track"><div class="skill-fill" style="width:88%;background:var(--pink);animation-delay:.3s"></div></div>
+						</div>
+						<div class="skill-row">
+							<div class="skill-meta"><span class="skill-name">Flutter / Mobile</span><span class="skill-pct">80%</span></div>
+							<div class="skill-track"><div class="skill-fill" style="width:80%;background:var(--amber);animation-delay:.4s"></div></div>
+						</div>
+						<div class="skill-row">
+							<div class="skill-meta"><span class="skill-name">Python / AI/ML</span><span class="skill-pct">72%</span></div>
+							<div class="skill-track"><div class="skill-fill" style="width:72%;background:var(--green);animation-delay:.5s"></div></div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<!-- BOTTOM ROW -->
+		<div class="bottom-row anim-5">
+
+			<!-- MINI CHART -->
+			<div class="panel">
+				<div class="panel-head">
+					<div class="panel-title"><span class="dot dot-cyan"></span> Monthly Output</div>
+				</div>
+				<div class="chart-area">
+					<svg viewBox="0 0 260 100" xmlns="http://www.w3.org/2000/svg" width="100%" style="overflow:visible;">
+						<defs>
+							<linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+								<stop offset="0%" stop-color="#00f5d4" stop-opacity="0.25"/>
+								<stop offset="100%" stop-color="#00f5d4" stop-opacity="0"/>
+							</linearGradient>
+						</defs>
+						<!-- Grid lines -->
+						<line x1="0" y1="25" x2="260" y2="25" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+						<line x1="0" y1="50" x2="260" y2="50" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+						<line x1="0" y1="75" x2="260" y2="75" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+						<!-- Area fill -->
+						<path d="M0,70 L37,55 L74,40 L111,60 L148,30 L185,20 L222,35 L260,15 L260,100 L0,100 Z" fill="url(#chartGrad)"/>
+						<!-- Line -->
+						<path d="M0,70 L37,55 L74,40 L111,60 L148,30 L185,20 L222,35 L260,15" fill="none" stroke="#00f5d4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+						<!-- Dots -->
+						<circle cx="260" cy="15" r="3" fill="#00f5d4"/>
+						<circle cx="185" cy="20" r="2.5" fill="#00f5d4" opacity="0.7"/>
+						<!-- Labels -->
+						<text x="0" y="115" font-family="Space Mono,monospace" font-size="7" fill="#6b6b80">Jan</text>
+						<text x="37" y="115" font-family="Space Mono,monospace" font-size="7" fill="#6b6b80">Feb</text>
+						<text x="74" y="115" font-family="Space Mono,monospace" font-size="7" fill="#6b6b80">Mar</text>
+						<text x="111" y="115" font-family="Space Mono,monospace" font-size="7" fill="#6b6b80">Apr</text>
+						<text x="148" y="115" font-family="Space Mono,monospace" font-size="7" fill="#6b6b80">May</text>
+						<text x="185" y="115" font-family="Space Mono,monospace" font-size="7" fill="#6b6b80">Jun</text>
+						<text x="222" y="115" font-family="Space Mono,monospace" font-size="7" fill="#6b6b80">Jul</text>
+						<text x="252" y="115" font-family="Space Mono,monospace" font-size="7" fill="#00f5d4">Aug</text>
+					</svg>
+				</div>
+			</div>
+
+			<!-- TECH STACK -->
+			<div class="panel">
+				<div class="panel-head">
+					<div class="panel-title"><span class="dot dot-amber"></span> Tech Stack</div>
+				</div>
+				<div class="stack-grid">
+					<div class="stack-pill"><span class="sp-dot" style="background:var(--cyan)"></span>React</div>
+					<div class="stack-pill"><span class="sp-dot" style="background:var(--cyan)"></span>Next.js</div>
+					<div class="stack-pill"><span class="sp-dot" style="background:#a78bfa"></span>Flutter</div>
+					<div class="stack-pill"><span class="sp-dot" style="background:var(--pink)"></span>Figma</div>
+					<div class="stack-pill"><span class="sp-dot" style="background:var(--amber)"></span>Python</div>
+					<div class="stack-pill"><span class="sp-dot" style="background:var(--green)"></span>Node.js</div>
+					<div class="stack-pill"><span class="sp-dot" style="background:var(--cyan)"></span>TypeScript</div>
+					<div class="stack-pill"><span class="sp-dot" style="background:var(--pink)"></span>Premiere</div>
+					<div class="stack-pill"><span class="sp-dot" style="background:#a78bfa"></span>After Effects</div>
+					<div class="stack-pill"><span class="sp-dot" style="background:var(--amber)"></span>Firebase</div>
+					<div class="stack-pill"><span class="sp-dot" style="background:var(--green)"></span>Supabase</div>
+					<div class="stack-pill"><span class="sp-dot" style="background:var(--cyan)"></span>Tailwind</div>
+				</div>
+			</div>
+
+			<!-- TIMELINE -->
+			<div class="panel">
+				<div class="panel-head">
+					<div class="panel-title"><span class="dot dot-green"></span> Upcoming Milestones</div>
+				</div>
+				<div class="timeline">
+					<div class="tl-item">
+						<div class="tl-date">May 25</div>
+						<div class="tl-bar"><div class="tl-dot" style="background:var(--cyan)"></div></div>
+						<div class="tl-content">
+							<div class="tl-title">NeoBank Beta Launch</div>
+							<div class="tl-sub">Staging → Production deploy</div>
+						</div>
+					</div>
+					<div class="tl-item">
+						<div class="tl-date">May 28</div>
+						<div class="tl-bar"><div class="tl-dot" style="background:#a78bfa"></div></div>
+						<div class="tl-content">
+							<div class="tl-title">Brand Reel Final Delivery</div>
+							<div class="tl-sub">Client handover + assets</div>
+						</div>
+					</div>
+					<div class="tl-item">
+						<div class="tl-date">Jun 5</div>
+						<div class="tl-bar"><div class="tl-dot" style="background:var(--amber)"></div></div>
+						<div class="tl-content">
+							<div class="tl-title">E-Commerce Payment Go-Live</div>
+							<div class="tl-sub">Razorpay integration complete</div>
+						</div>
+					</div>
+					<div class="tl-item">
+						<div class="tl-date">Jun 12</div>
+						<div class="tl-bar"><div class="tl-dot" style="background:var(--pink)"></div></div>
+						<div class="tl-content">
+							<div class="tl-title">UI Kit v1.0 Release</div>
+							<div class="tl-sub">Public Figma community drop</div>
+						</div>
+					</div>
+					<div class="tl-item">
+						<div class="tl-date">Jun 20</div>
+						<div class="tl-bar"><div class="tl-dot" style="background:var(--green)"></div></div>
+						<div class="tl-content">
+							<div class="tl-title">AI Chatbot MVP</div>
+							<div class="tl-sub">Internal testing begins</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+	</main>
+</div>
+
+<script>
+// Cursor
+const cur=document.getElementById('cur');
+const trail=document.getElementById('cur-trail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{
+	mx=e.clientX;my=e.clientY;
+	cur.style.left=mx+'px';cur.style.top=my+'px';
+});
+(function loop(){
+	tx+=(mx-tx)*.15;ty+=(my-ty)*.15;
+	trail.style.left=tx+'px';trail.style.top=ty+'px';
+	requestAnimationFrame(loop);
+})();
+document.querySelectorAll('a,button,.proj-row,.kpi-card,.stack-pill,.tl-item').forEach(el=>{
+	el.addEventListener('mouseenter',()=>document.body.classList.add('cursor-big'));
+	el.addEventListener('mouseleave',()=>document.body.classList.remove('cursor-big'));
+});
+
+// Live clock
+function tick(){
+	const now=new Date();
+	document.getElementById('clock').textContent=now.toLocaleTimeString('en-IN',{hour12:false});
+}
+tick();setInterval(tick,1000);
+
+// Progress bars animate on load
+window.addEventListener('load',()=>{
+	document.querySelectorAll('.prog-fill').forEach(el=>{
+		const w=el.style.width;el.style.width='0';
+		setTimeout(()=>{el.style.transition='width 1s ease';el.style.width=w;},300);
+	});
+});
+</script>
+</body>
+</html>
