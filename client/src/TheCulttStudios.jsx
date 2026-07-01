@@ -216,27 +216,26 @@ export default function TheCulttStudios() {
         <div className="work-grid">
           <a
             className="work-item pattern-1 fade-up"
-            href="/realestate-portfolio.html"
+            href="https://monopropertyweb.vercel.app"
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              backgroundImage: "url('/images/realstate.png')",
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
-            }}
           >
-            <img className="work-img" src="/images/realstate.png" alt="Project preview" />
+            <video className="work-img" src="/images/realvideo.mp4" autoPlay muted loop playsInline preload="auto" />
             <div className="work-overlay">
               <div className="work-cat">Web and App Development</div>
-              <div className="work-title">Full-Stack Experience</div>
+              <div className="work-title">Full-Stack Experience - View Live </div>
             </div>
           </a>
-          <a className="work-item pattern-2 fade-up" href="/realestate-portfolio.html" target="_blank" rel="noopener noreferrer">
+          <div className="work-item pattern-2 fade-up">
+            <div className="work-videos">
+              <video className="work-video" src="/images/port01.mp4" autoPlay muted loop playsInline preload="auto" />
+              <video className="work-video" src="/images/port02.mp4" autoPlay muted loop playsInline preload="auto" />
+            </div>
             <div className="work-overlay">
               <div className="work-cat">Video Edit</div>
               <div className="work-title">Cinematic Brand Reel</div>
             </div>
-          </a>
+          </div>
           <a className="work-item pattern-3 fade-up" href="/project-dashboard.html" target="_blank" rel="noopener noreferrer">
             <img className="work-img" src="/images/photos-dash.png" alt="Dashboard preview" />
             <div className="work-overlay">
